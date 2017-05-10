@@ -54,6 +54,22 @@ class DiskStore(object):
         except KeyError:
             return None
 
+    def hmget(self, filename, storekeys):
+        # TODO: count the number of arguments and raise error
+        filepath = self.storpath + "/" + filename
+        try:
+            with open(filepath) as json_file:
+                json_data = json.load(json_file)
+        except IOError:
+            raise Exception("Directory or file not found")
+        try:
+            values = []
+            for i in storekeys:
+                values.append(json_data[i])
+            return values
+        except KeyError:
+            return None
+
     def hgetall(self, filename):
         # TODO: count the number of arguments and raise error
         filepath = self.storpath + "/" + filename
