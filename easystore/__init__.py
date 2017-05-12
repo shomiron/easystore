@@ -41,6 +41,17 @@ class DiskStore(object):
         with open(filepath, 'w') as json_file:
             json.dump(json_data, json_file)
 
+    def set(self, filename, kvdata):
+        # TODO: count the number of arguments and raise error
+        # TODO: Check if storpath ends with a / and re-eval below
+        filepath = self.storpath + "/" + filename
+        try:
+            json_data = kvdata
+            with open(filepath, 'w') as json_file:
+                json.dump(json_data, json_file)
+        except IOError:
+            return None
+
     def hget(self, filename, keyname):
         # TODO: count the number of arguments and raise error
         filepath = self.storpath + "/" + filename
@@ -53,6 +64,20 @@ class DiskStore(object):
             return json_data[keyname]
         except KeyError:
             return None
+
+    def get(self, filename):
+        # TODO: count the number of arguments and raise error
+        filepath = self.storpath + "/" + filename
+        try:
+            with open(filepath) as json_file:
+                json_data = json.load(json_file)
+        except IOError:
+            raise Exception("Directory or file not found")
+        try:
+            return json_data
+        except KeyError:
+            return None
+
 
     def hmget(self, filename, storekeys):
         # TODO: count the number of arguments and raise error
