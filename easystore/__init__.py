@@ -35,7 +35,7 @@ class DiskStore(object):
                 json_data = json.load(json_file)
             json_data[keyname] = kvdata
         except IOError:
-            json_data = {}
+            json_data = dict()
             json_data[keyname] = kvdata
 
         with open(filepath, 'w') as json_file:
@@ -72,12 +72,12 @@ class DiskStore(object):
             with open(filepath) as json_file:
                 json_data = json.load(json_file)
         except IOError:
-            raise Exception("Directory or file not found")
+            return None
+            # raise Exception("Directory or file not found")
         try:
             return json_data
         except KeyError:
             return None
-
 
     def hmget(self, filename, storekeys):
         # TODO: count the number of arguments and raise error
