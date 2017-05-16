@@ -59,7 +59,7 @@ class DiskStore(object):
             with open(filepath) as json_file:
                 json_data = json.load(json_file)
         except IOError:
-            raise Exception("Directory or file not found")
+            return None
         try:
             return json_data[keyname]
         except KeyError:
@@ -72,7 +72,7 @@ class DiskStore(object):
             with open(filepath) as json_file:
                 json_data = json.load(json_file)
         except IOError:
-            raise Exception("Directory or file not found")
+            return None
         try:
             return json_data
         except KeyError:
