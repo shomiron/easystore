@@ -95,6 +95,22 @@ class DiskStore(object):
         except KeyError:
             return None
 
+    def hmset(self, filename, storekeys):
+        # TODO: count the number of arguments and raise error
+        # TODO: Check if storpath ends with a / and re-eval below
+        filepath = self.storpath + "/" + filename
+        try:
+            with open(filepath) as json_file:
+                json_data = json.load(json_file)
+        except IOError:
+            json_data = dict()
+
+        for i in storekeys:
+            json_data[i] = storekeys[i]
+
+        with open(filepath, 'w') as json_file:
+            json.dump(json_data, json_file)
+
     def hgetall(self, filename):
         # TODO: count the number of arguments and raise error
         filepath = self.storpath + "/" + filename
