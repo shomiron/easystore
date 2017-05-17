@@ -65,6 +65,20 @@ class DiskStore(object):
         except KeyError:
             return None
 
+    def hdel(self, filename, keyname):
+        # TODO: count the number of arguments and raise error
+        filepath = self.storpath + "/" + filename
+        try:
+            with open(filepath) as json_file:
+                json_data = json.load(json_file)
+        except IOError:
+            return None
+        try:
+            keyval = json_data.pop('asd',None)
+            return keyval
+        except KeyError:
+            return None
+
     def get(self, filename):
         # TODO: count the number of arguments and raise error
         filepath = self.storpath + "/" + filename
