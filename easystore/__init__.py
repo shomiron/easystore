@@ -38,7 +38,7 @@ class DiskStore(object):
             json_data = dict()
             json_data[keyname] = kvdata
 
-        with open(filepath, 'r+') as json_file:
+        with open(filepath, 'w') as json_file:
             json.dump(json_data, json_file)
 
     def set(self, filename, kvdata):
@@ -74,10 +74,13 @@ class DiskStore(object):
         except IOError:
             return None
         try:
-            keyval = json_data.pop(keyname,None)
+            keyval = json_data.pop('asd',None)
             return keyval
         except KeyError:
             return None
+
+        with open(filepath, 'w') as json_file:
+            json.dump(json_data, json_file)
 
     def get(self, filename):
         # TODO: count the number of arguments and raise error
@@ -121,7 +124,7 @@ class DiskStore(object):
         for i in storekeys:
             json_data[i] = storekeys[i]
 
-        with open(filepath, 'r+') as json_file:
+        with open(filepath, 'w') as json_file:
             json.dump(json_data, json_file)
 
     def hgetall(self, filename):
