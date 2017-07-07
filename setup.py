@@ -13,7 +13,7 @@ REQUIREMENTS = [
 
 setup(
     name='easystore',
-    version='1.3.5',
+    version='1.3.7',
     description='Redis like syntax to store and retrieve from json files',
     long_description=README,
     author='Shomiron DAS GUPTA',

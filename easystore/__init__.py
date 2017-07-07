@@ -74,13 +74,14 @@ class DiskStore(object):
         except IOError:
             return None
         try:
-            keyval = json_data.pop('asd',None)
+            keyval = json_data.pop(keyname, None)
+            with open(filepath, 'w') as json_file:
+                json.dump(json_data, json_file)
             return keyval
         except KeyError:
             return None
 
-        with open(filepath, 'w') as json_file:
-            json.dump(json_data, json_file)
+
 
     def get(self, filename):
         # TODO: count the number of arguments and raise error
