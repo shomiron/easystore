@@ -6,8 +6,10 @@ with easystore.
 import os
 import json
 
+
 class DiskStore(object):
     """Initialize the DiskStore."""
+
     def __init__(self, storpath='/var/lib/easystore'):
         self.storpath = storpath
         self.__create_storpath()
@@ -29,8 +31,11 @@ class DiskStore(object):
     def hset(self, filename, keyname, kvdata):
         # TODO: count the number of arguments and raise error
         # TODO: Check if storpath ends with a / and re-eval below
-        filepath = self.storpath + "/" + filename
+        filepath = self.storpath + "/" + filename + "/" + keyname
         try:
+            directory = os.path.dirname(filepath)
+            if not os.path.exists(directory):
+                os.makedirs(directory)
             with open(filepath) as json_file:
                 json_data = json.load(json_file)
             json_data[keyname] = kvdata
@@ -54,8 +59,11 @@ class DiskStore(object):
 
     def hget(self, filename, keyname):
         # TODO: count the number of arguments and raise error
-        filepath = self.storpath + "/" + filename
+        filepath = self.storpath + "/" + filename + "/" + keyname
         try:
+            directory = os.path.dirname(filepath)
+            if not os.path.exists(directory):
+                os.makedirs(directory)
             with open(filepath) as json_file:
                 json_data = json.load(json_file)
         except IOError:
@@ -67,21 +75,20 @@ class DiskStore(object):
 
     def hdel(self, filename, keyname):
         # TODO: count the number of arguments and raise error
-        filepath = self.storpath + "/" + filename
+        filepath = self.storpath + "/" + filename + "/" + keyname
         try:
             with open(filepath) as json_file:
                 json_data = json.load(json_file)
         except IOError:
             return None
         try:
-            keyval = json_data.pop(keyname, None)
-            with open(filepath, 'w') as json_file:
-                json.dump(json_data, json_file)
-            return keyval
+            with open(filepath) as json_file:
+                json_data = json.load(json_file)
+            if os.path.isfile(filepath):
+                os.remove(filepath)
+            return json_data
         except KeyError:
             return None
-
-
 
     def get(self, filename):
         # TODO: count the number of arguments and raise error
@@ -100,16 +107,16 @@ class DiskStore(object):
         # TODO: count the number of arguments and raise error
         filepath = self.storpath + "/" + filename
         try:
-            with open(filepath) as json_file:
-                json_data = json.load(json_file)
-        except IOError:
-            return None
-        try:
             values = []
             for i in storekeys:
-                values.append(json_data[i])
+                directory = os.path.dirname(filepath + '/' + i)
+                if not os.path.exists(directory):
+                    os.makedirs(directory)
+                with open(filepath + '/' + i) as json_file:
+                    json_data = json.load(json_file)
+                    values.append(json_data)
             return values
-        except KeyError:
+        except IOError:
             return None
 
     def hmset(self, filename, storekeys):
@@ -117,23 +124,28 @@ class DiskStore(object):
         # TODO: Check if storpath ends with a / and re-eval below
         filepath = self.storpath + "/" + filename
         try:
-            with open(filepath) as json_file:
-                json_data = json.load(json_file)
+            for i in storekeys:
+                directory = os.path.dirname(filepath + '/' + i)
+                if not os.path.exists(directory):
+                    os.makedirs(directory)
+                with open(filepath + '/' + i, 'w') as json_file:
+                    json.dump({i: storekeys[i]}, json_file)
         except IOError:
-            json_data = dict()
-
-        for i in storekeys:
-            json_data[i] = storekeys[i]
-
-        with open(filepath, 'w') as json_file:
-            json.dump(json_data, json_file)
+            return None
 
     def hgetall(self, filename):
         # TODO: count the number of arguments and raise error
         filepath = self.storpath + "/" + filename
         try:
-            with open(filepath) as json_file:
-                json_data = json.load(json_file)
+            onlyfiles = [f for f in os.listdir(filepath) if os.path.isfile(os.path.join(filepath, f))]
+            json_dict = {}
+            for i in onlyfiles:
+                with open(filepath + '/' + i) as json_file:
+                    json_data = json.load(json_file)
+                    json_dict.update(json_data)
         except IOError:
             return None
-        return json_data
+        if len(json_dict) > 0:
+            return json_dict
+        else:
+            return None
