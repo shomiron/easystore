@@ -114,7 +114,7 @@ class DiskStore(object):
                     os.makedirs(directory)
                 with open(filepath + '/' + i) as json_file:
                     json_data = json.load(json_file)
-                    values.append(json_data)
+                    values.append(json_data[i])
             return values
         except IOError:
             return None
