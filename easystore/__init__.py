@@ -145,6 +145,8 @@ class DiskStore(object):
                     json_dict.update(json_data)
         except IOError:
             return None
+        except OSError:
+            return None
         if len(json_dict) > 0:
             return json_dict
         else:
